@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manzar Abbas — Full Stack Developer & AI Engineer</title>
+  <meta name="description" content="Portfolio of Manzar Abbas, Full Stack Developer & AI Engineer based in Karachi, Pakistan." />
+  <script>
+    /* Apply saved theme before first paint (no flash of wrong theme). */
+    (function () {
+      try {
+        var t = localStorage.getItem("manzar_theme") || "dark";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b0c0e'/%3E%3Ctext x='50' y='68' font-family='sans-serif' font-size='52' font-weight='bold' fill='%23f5c451' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+  <!-- PRELOADER -->
+  <div class="preloader" id="preloader">
+    <div class="pre-mark"><span>M</span><svg viewBox="0 0 50 50" class="pre-ring"><circle cx="25" cy="25" r="22" /></svg></div>
+    <div class="pre-label">MANZAR&nbsp;ABBAS</div>
+  </div>
+
+  <!-- SCROLL PROGRESS -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- LAYERED BACKGROUND SYSTEM -->
+  <div class="bg-system" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+    <div class="bg-beam beam-1"></div>
+    <div class="bg-beam beam-2"></div>
+    <div class="bg-vignette"></div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <a href="#top" class="brand"><span class="dot"></span><span id="navBrand">Manzar Abbas</span></a>
+    <div class="nav-cluster">
+      <div class="nav-links" id="navLinks">
+        <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
+        <a href="#about">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#projects">Work</a>
+        <a href="#skills">Skills</a>
+        <a href="#education">Education</a>
+        <a href="#contact">Contact</a>
+        <a id="navResume" class="nav-cta nav-resume" download="Manzar-Abbas-Resume.pdf">⬇ Resume</a>
+        <a href="admin.html" class="nav-cta">⚙ Admin</a>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light / dark theme" title="Toggle theme">
+        <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero" id="top">
+    <div class="mesh"></div>
+    <div class="grid-bg"></div>
+    <div class="hero-glow" id="heroGlow"></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="hero-status"><span class="pulse"></span><span id="heroStatus">Open to opportunities</span></span>
+        <h1 id="heroName"></h1>
+        <p class="role" id="heroRole"></p>
+        <p class="tagline" id="heroTagline"></p>
+        <div class="hero-actions">
+          <a href="#projects" class="btn btn-primary">View my work
+            <svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a id="heroResume" class="btn btn-resume" download="Manzar-Abbas-Resume.pdf">Download CV
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+          </a>
+          <a href="#contact" class="btn btn-ghost">Get in touch</a>
+        </div>
+        <div class="hero-socials" id="heroSocials"></div>
+      </div>
+
+      <div class="portrait-wrap">
+        <div class="portrait-ring"></div>
+        <div class="portrait-aura" aria-hidden="true"></div>
+        <div class="portrait">
+          <span class="portrait-scan" aria-hidden="true"></span>
+          <img id="heroImg" alt="Manzar Abbas" />
+          <span class="frame-corner tl" aria-hidden="true"></span>
+          <span class="frame-corner tr" aria-hidden="true"></span>
+          <span class="frame-corner bl" aria-hidden="true"></span>
+          <span class="frame-corner br" aria-hidden="true"></span>
+          <span class="portrait-badge"><b>●</b> <span id="heroLocation"></span></span>
+        </div>
+        <div class="float-chip c1"><span>{ }</span> Full Stack</div>
+        <div class="float-chip c2"><span>&lt;/&gt;</span> AI / ML</div>
+        <div class="float-chip c3"><span>☁</span> Cloud / DevOps</div>
+      </div>
+    </div>
+
+    <a href="#about" class="scroll-cue" aria-label="Scroll down">
+      <span class="mouse"></span>
+      <span>Scroll</span>
+    </a>
+  </header>
+
+  <main>
+    <!-- ABOUT -->
+    <section id="about" class="wrap">
+      <span class="eyebrow reveal">01 — About</span>
+      <h2 class="sec-title reveal">Engineering across the <em>full stack</em>.</h2>
+      <div class="about-grid" style="margin-top:48px">
+        <div class="about-text reveal">
+          <p class="lead" id="aboutLead"></p>
+          <p id="aboutBody"></p>
+        </div>
+        <div class="stats reveal" id="statsMount"></div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience" class="wrap">
+      <span class="eyebrow reveal">02 — Experience</span>
+      <h2 class="sec-title reveal">Where I've <em>built things</em>.</h2>
+      <div class="timeline" id="timelineMount"></div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="wrap">
+      <span class="eyebrow reveal">03 — Selected work</span>
+      <h2 class="sec-title reveal">Projects &amp; <em>experiments</em>.</h2>
+      <div class="proj-grid" id="projectsMount"></div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="wrap">
+      <span class="eyebrow reveal">04 — Toolkit</span>
+      <h2 class="sec-title reveal">Technologies I <em>work with</em>.</h2>
+      <div class="skills-grid" id="skillsMount"></div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section id="education" class="wrap">
+      <span class="eyebrow reveal">05 — Education</span>
+      <h2 class="sec-title reveal">Academic <em>background</em>.</h2>
+      <div class="edu-list" id="eduMount"></div>
+    </section>
+
+    <!-- CERTIFICATIONS -->
+    <section id="certifications" class="wrap">
+      <span class="eyebrow reveal">06 — Credentials</span>
+      <h2 class="sec-title reveal">Certifications &amp; <em>courses</em>.</h2>
+      <div class="cert-grid" id="certMount"></div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="contact">
+      <div class="wrap">
+        <span class="eyebrow reveal" style="justify-content:center">07 — Contact</span>
+        <h2 class="reveal">Let's build something <em>great</em>.</h2>
+        <a class="contact-mail reveal" id="contactMail"></a>
+        <div class="contact-meta reveal" id="contactMeta"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer wrap">
+    <a href="#top" class="brand"><span class="dot"></span><span id="footBrand"></span></a>
+    <span id="footNote"></span>
+    <a href="#top" class="to-top">Back to top
+      <svg viewBox="0 0 24 24" width="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+    </a>
+  </footer>
+
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

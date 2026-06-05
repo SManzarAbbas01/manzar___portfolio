@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — Manzar Abbas Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b0c0e'/%3E%3Ctext x='50' y='68' font-family='sans-serif' font-size='52' font-weight='bold' fill='%23f5c451' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E" />
+</head>
+<body class="admin-body">
+
+  <!-- LOGIN GATE -->
+  <div class="gate" id="gate">
+    <div class="mesh"></div>
+    <div class="gate-card">
+      <div class="gate-logo"><span class="dot" style="width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent-glow)"></span>Admin Panel</div>
+      <div class="gate-sub">Manage your portfolio content</div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="gatePass" placeholder="Enter password" autocomplete="current-password" />
+      </div>
+      <button class="b b-primary" id="gateBtn" style="width:100%;justify-content:center">Unlock Panel</button>
+      <div class="gate-hint">Manage your portfolio content. You can change the password in Settings.</div>
+    </div>
+  </div>
+
+  <!-- ADMIN SHELL -->
+  <div class="admin-shell" id="shell" style="display:none">
+    <aside class="side">
+      <div class="brand"><span class="dot"></span>Content CMS</div>
+      <div class="side-sub">/ manzar-portfolio</div>
+
+      <button class="nav-tab active" data-tab="profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg> Profile &amp; Photo</button>
+      <button class="nav-tab" data-tab="experience">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Experience</button>
+      <button class="nav-tab" data-tab="projects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l10-4 10 4-10 4z"/><path d="M2 7v10l10 4 10-4V7"/></svg> Projects</button>
+      <button class="nav-tab" data-tab="skills">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4 1.5 7L12 16l-5.5 4L8 13 3 9l6.5-.5z"/></svg> Skills</button>
+      <button class="nav-tab" data-tab="education">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.5 3 6 3s6-2 6-3v-5"/></svg> Education</button>
+      <button class="nav-tab" data-tab="certifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 21l5-2.5L17 21l-1.5-8.5"/></svg> Certifications</button>
+      <button class="nav-tab" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</button>
+
+      <div class="side-foot">
+        <a href="index.html" target="_blank">↗ View live site</a>
+        <button id="logoutBtn">⏻ Lock panel</button>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <!-- PROFILE -->
+      <section class="panel active" id="panel-profile">
+        <div class="page-head"><h1>Profile &amp; Photo</h1><p>Your hero details, photo and the "About" text.</p></div>
+        <div class="field">
+          <label>Profile photo (landing page, right side)</label>
+          <div class="img-uploader">
+            <img class="img-preview" id="imgPreview" alt="preview" />
+            <div class="uploader-ctrls">
+              <input type="file" id="imgFile" accept="image/*" />
+              <button class="b b-primary b-sm" id="imgPick">⬆ Upload new photo</button>
+              <button class="b b-ghost b-sm" id="imgReset" style="margin-left:8px">Reset</button>
+              <div class="hint" style="margin-top:12px">JPG/PNG. Recommended portrait ~800×960px. Large files may exceed browser storage — compress big photos first.</div>
+            </div>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Full name</label><input id="f_name" /></div>
+          <div class="field"><label>Role / title</label><input id="f_role" /></div>
+        </div>
+        <div class="field"><label>Tagline (short)</label><input id="f_tagline" /></div>
+        <div class="field"><label>About paragraph</label><textarea id="f_about"></textarea></div>
+        <div class="row2">
+          <div class="field"><label>Location</label><input id="f_location" /></div>
+          <div class="field"><label>Phone</label><input id="f_phone" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Email</label><input id="f_email" /></div>
+          <div class="field"><label>LinkedIn URL</label><input id="f_linkedin" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>GitHub URL</label><input id="f_github" placeholder="https://github.com/username" /></div>
+          <div class="field"><label>Résumé / CV file (path or URL)</label><input id="f_resume" placeholder="FinalResume.pdf" /></div>
+        </div>
+        <div class="hint" style="margin:-8px 0 4px;font-size:.78rem;color:var(--txt-mut)">Keep your PDF in the site folder and use its filename (e.g. <b>FinalResume.pdf</b>), or paste a full URL. Powers the “Download CV” buttons.</div>
+
+        <label style="font-family:var(--font-mono);font-size:.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt-dim)">Hero stats (3 metrics)</label>
+        <div id="statsEditor" style="margin-top:12px"></div>
+
+        <div class="actions-bar"><button class="b b-primary" id="saveProfile">💾 Save profile</button></div>
+      </section>
+
+      <!-- EXPERIENCE -->
+      <section class="panel" id="panel-experience">
+        <div class="page-head"><h1>Experience</h1><p>Add, edit or remove work history entries.</p></div>
+        <div class="list" id="expList"></div>
+        <button class="b b-ghost" id="addExp">＋ Add experience</button>
+      </section>
+
+      <!-- PROJECTS -->
+      <section class="panel" id="panel-projects">
+        <div class="page-head"><h1>Projects</h1><p>Manage your portfolio of work.</p></div>
+        <div class="list" id="projList"></div>
+        <button class="b b-ghost" id="addProj">＋ Add project</button>
+      </section>
+
+      <!-- SKILLS -->
+      <section class="panel" id="panel-skills">
+        <div class="page-head"><h1>Skills</h1><p>Group skills into categories. Separate items with commas.</p></div>
+        <div class="list" id="skillList"></div>
+        <button class="b b-ghost" id="addSkill">＋ Add category</button>
+      </section>
+
+      <!-- EDUCATION -->
+      <section class="panel" id="panel-education">
+        <div class="page-head"><h1>Education</h1><p>Schools, degrees and academic details.</p></div>
+        <div class="list" id="eduList"></div>
+        <button class="b b-ghost" id="addEdu">＋ Add education</button>
+      </section>
+
+      <!-- CERTIFICATIONS -->
+      <section class="panel" id="panel-certifications">
+        <div class="page-head"><h1>Certifications</h1><p>Courses, certificates and credentials.</p></div>
+        <div class="list" id="certList"></div>
+        <button class="b b-ghost" id="addCert">＋ Add certification</button>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="panel" id="panel-settings">
+        <div class="page-head"><h1>Settings</h1><p>Security, backup and data management.</p></div>
+
+        <div class="field"><label>Change admin password</label><input type="password" id="newPass" placeholder="New password" /></div>
+        <button class="b b-primary b-sm" id="savePass">Update password</button>
+
+        <hr style="border:0;border-top:1px solid var(--line-soft);margin:34px 0" />
+
+        <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:6px">Backup &amp; transfer data</h3>
+        <p style="color:var(--txt-mut);margin-bottom:18px;font-size:.95rem">Your content lives in this browser. Export a backup file, or import it into another browser / after publishing online.</p>
+        <div class="actions-bar" style="margin-top:0">
+          <button class="b b-ghost" id="exportBtn">⬇ Export data (JSON)</button>
+          <input type="file" id="importFile" accept="application/json,.json" />
+          <button class="b b-ghost" id="importBtn">⬆ Import data (JSON)</button>
+        </div>
+
+        <hr style="border:0;border-top:1px solid var(--line-soft);margin:34px 0" />
+
+        <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:6px;color:#ff6b6b">Danger zone</h3>
+        <p style="color:var(--txt-mut);margin-bottom:18px;font-size:.95rem">Reset all content back to the original résumé data. This cannot be undone.</p>
+        <button class="b b-danger" id="resetBtn">↺ Reset to default content</button>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

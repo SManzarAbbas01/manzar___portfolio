@@ -33,7 +33,7 @@ const DEFAULT_DATA = {
     email: "manziabbas512@gmail.com",
     linkedin: "https://www.linkedin.com/",
     github: "https://github.com/SManzarAbbas01",
-    resumeUrl: "FinalResume.pdf",
+    resumeUrl: "https://drive.google.com/uc?export=download&id=1UeiaYA8Z82uN04tfaaHR1yid6GG9PHFg",
     about:
       "Full Stack Developer and AI Engineer specializing in end-to-end web and mobile development and machine-learning and deep-learning–based systems. Experienced in designing, deploying and maintaining production-ready applications using modern full-stack technologies and AI models.",
     image: DEFAULT_AVATAR,

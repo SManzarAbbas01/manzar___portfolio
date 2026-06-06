@@ -75,13 +75,23 @@
     $("heroImg").alt = p.name;
 
     // resume / CV download links (hero + nav)
-    var resume = p.resumeUrl || "FinalResume.pdf";
+    var resume = p.resumeUrl || "https://drive.google.com/uc?export=download&id=1UeiaYA8Z82uN04tfaaHR1yid6GG9PHFg";
+    // download attribute is ignored for cross-origin (e.g. Google Drive) links,
+    // so external resumes are opened in a new tab instead.
+    var resumeExternal = /^https?:\/\//i.test(resume);
     var github = p.github || "https://github.com/SManzarAbbas01";
     ["heroResume", "navResume"].forEach(function (id) {
       var el = $(id);
       if (!el) return;
-      if (resume) { el.href = resume; el.style.display = ""; }
-      else { el.style.display = "none"; }
+      if (resume) {
+        el.href = resume;
+        el.style.display = "";
+        if (resumeExternal) {
+          el.target = "_blank";
+          el.rel = "noopener";
+          el.removeAttribute("download");
+        }
+      } else { el.style.display = "none"; }
     });
 
     // socials
@@ -89,7 +99,7 @@
     if (p.email) socials.push('<a href="mailto:' + esc(p.email) + '" title="Email">' + ICON.mail + "</a>");
     if (p.linkedin) socials.push('<a href="' + esc(p.linkedin) + '" target="_blank" rel="noopener" title="LinkedIn">' + ICON.linkedin + "</a>");
     if (github) socials.push('<a href="' + esc(github) + '" target="_blank" rel="noopener" title="GitHub">' + ICON.github + "</a>");
-    if (resume) socials.push('<a href="' + esc(resume) + '" download="Manzar-Abbas-Resume.pdf" title="Download résumé">' + ICON.resume + "</a>");
+    if (resume) socials.push('<a href="' + esc(resume) + '"' + (resumeExternal ? ' target="_blank" rel="noopener"' : ' download="Manzar-Abbas-Resume.pdf"') + ' title="Download résumé">' + ICON.resume + "</a>");
     if (p.phone) socials.push('<a href="tel:' + esc(p.phone.replace(/\s/g, "")) + '" title="Call">' + ICON.phone + "</a>");
     $("heroSocials").innerHTML = socials.join("");
 
@@ -113,7 +123,7 @@
     if (p.location) meta.push(esc(p.location));
     if (p.linkedin) meta.push('<a href="' + esc(p.linkedin) + '" target="_blank" rel="noopener" style="color:var(--accent-ink)">LinkedIn</a>');
     if (github) meta.push('<a href="' + esc(github) + '" target="_blank" rel="noopener" style="color:var(--accent-ink)">GitHub</a>');
-    if (resume) meta.push('<a href="' + esc(resume) + '" download="Manzar-Abbas-Resume.pdf" style="color:var(--accent-ink)">Download CV</a>');
+    if (resume) meta.push('<a href="' + esc(resume) + '"' + (resumeExternal ? ' target="_blank" rel="noopener"' : ' download="Manzar-Abbas-Resume.pdf"') + ' style="color:var(--accent-ink)">Download CV</a>');
     $("contactMeta").innerHTML = meta.join("<span>·</span>");
 
     $("footNote").textContent = "© " + new Date().getFullYear() + " " + p.name + " · Built with care.";

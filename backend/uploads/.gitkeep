@@ -1,0 +1,2 @@
+# Keep the uploads/ folder in version control.
+# Images are streamed to Cloudinary in-memory; nothing is written here.

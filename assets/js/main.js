@@ -4,7 +4,7 @@
 (function () {
   "use strict";
 
-  var data = Store.getData();
+  var data = null; // populated asynchronously from GET /api/portfolio
   var $ = function (id) { return document.getElementById(id); };
 
   function esc(s) {
@@ -71,7 +71,7 @@
     typeText($("heroRole"), p.role || "", 45, 650);
     $("heroTagline").textContent = p.tagline;
     $("heroLocation").textContent = p.location;
-    $("heroImg").src = p.image || Store.DEFAULT_AVATAR;
+    $("heroImg").src = p.image || API.DEFAULT_AVATAR;
     $("heroImg").alt = p.name;
 
     // resume / CV download links (hero + nav)
@@ -372,21 +372,55 @@
     if (pre) pre.classList.add("done");
   }
 
-  /* ---------- boot ---------- */
-  renderProfile();
-  renderExperience();
-  renderProjects();
-  renderSkills();
-  renderEducation();
-  renderCerts();
-  initTheme();
-  initInteractions();
-
-  if (document.readyState === "complete") {
-    setTimeout(hidePreloader, 250);
-  } else {
-    window.addEventListener("load", function () { setTimeout(hidePreloader, 250); });
+  /* ---------- Non-blocking error banner (backend unreachable) ---------- */
+  function showError(message) {
+    var name = $("heroName");
+    if (name && !name.innerHTML) {
+      name.innerHTML = '<span class="line accent">Manzar</span><span class="line">Abbas</span>';
+    }
+    var tag = $("heroTagline");
+    if (tag) {
+      tag.textContent = message;
+      tag.style.color = "#ff6b6b";
+    }
   }
-  // safety net so the loader never gets stuck
-  setTimeout(hidePreloader, 2200);
+
+  /* ---------- Render everything from fetched data ---------- */
+  function renderAll() {
+    renderProfile();
+    renderExperience();
+    renderProjects();
+    renderSkills();
+    renderEducation();
+    renderCerts();
+  }
+
+  /* ---------- boot ---------- */
+  // Theme + preloader are independent of data and run immediately.
+  initTheme();
+
+  function finishPreloader() {
+    if (document.readyState === "complete") {
+      setTimeout(hidePreloader, 250);
+    } else {
+      window.addEventListener("load", function () { setTimeout(hidePreloader, 250); });
+    }
+    // safety net so the loader never gets stuck
+    setTimeout(hidePreloader, 2200);
+  }
+
+  API.getPortfolio()
+    .then(function (fetched) {
+      data = fetched || {};
+      renderAll();
+      // Interactions must run AFTER dynamic content (.reveal / .proj-card) exists.
+      initInteractions();
+    })
+    .catch(function (err) {
+      console.error("Failed to load portfolio data:", err);
+      showError("Couldn't reach the server. Please try again shortly.");
+      // Still wire up baseline interactions for nav/theme/scroll.
+      try { initInteractions(); } catch (e) { /* ignore */ }
+    })
+    .finally(finishPreloader);
 })();

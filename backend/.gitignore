@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets — NEVER commit
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local uploads (we use in-memory streaming to Cloudinary; nothing should land here)
+uploads/*
+!uploads/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

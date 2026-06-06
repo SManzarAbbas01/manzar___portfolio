@@ -1,0 +1,44 @@
+{
+  "name": "manzar-portfolio-backend",
+  "version": "1.0.0",
+  "description": "Production backend for the Manzar Abbas portfolio — Express + MongoDB Atlas + Cloudinary.",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test/integration.test.js && node test/frontend.test.js && node test/e2e.test.js",
+    "test:integration": "node test/integration.test.js",
+    "test:frontend": "node test/frontend.test.js",
+    "test:e2e": "node test/e2e.test.js",
+    "test:cloudinary": "node test/cloudinary.test.js",
+    "test:upload": "node test/upload.test.js"
+  },
+  "keywords": [
+    "portfolio",
+    "express",
+    "mongodb",
+    "cloudinary",
+    "cms"
+  ],
+  "author": "Manzar Abbas",
+  "license": "MIT",
+  "dependencies": {
+    "cloudinary": "^2.5.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "mongoose": "^8.9.5",
+    "multer": "^2.1.1",
+    "streamifier": "^0.1.1"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.1",
+    "mongodb-memory-server": "^10.4.3"
+  }
+}

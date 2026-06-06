@@ -1,0 +1,3 @@
+# The backend is deployed separately on Render — don't ship it to Vercel.
+backend/
+*.zip

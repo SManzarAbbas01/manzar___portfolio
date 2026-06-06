@@ -1,10 +1,14 @@
 /* ============================================================
    ADMIN.JS — no-code content manager for the portfolio
+   Backend-driven: data is loaded from GET /api/portfolio, saved via
+   PUT /api/portfolio, and images upload to Cloudinary via
+   POST /api/upload-image. No localStorage / Store.js anymore.
    ============================================================ */
 (function () {
   "use strict";
 
-  var data = Store.getData();
+  var data = null;            // loaded after login from the API
+  var loaded = false;         // whether data has been fetched at least once
   var $ = function (id) { return document.getElementById(id); };
 
   /* ---------- Toast ---------- */
@@ -17,20 +21,78 @@
     toastT = setTimeout(function () { t.className = "toast"; }, 2600);
   }
 
-  function persist() { Store.saveData(data); }
+  /* ---------- Persist current data to the backend (PUT) ---------- */
+  // Optimistic: the local `data` object is already mutated and re-rendered;
+  // this syncs it to MongoDB and reports success / failure.
+  function persist(successMsg) {
+    if (!data) { toast("Still loading — try again in a moment", true); return Promise.resolve(false); }
+    return API.savePortfolio(data)
+      .then(function (saved) {
+        if (saved) data = saved;
+        if (successMsg) toast(successMsg);
+        return true;
+      })
+      .catch(function (err) {
+        console.error("Save failed:", err);
+        if (err.status === 401) {
+          toast("Session expired — please log in again", true);
+          lock();
+        } else {
+          toast(err.message || "Could not save to server", true);
+        }
+        return false;
+      });
+  }
 
   /* ---------- Login gate ---------- */
   function unlock() { $("gate").style.display = "none"; $("shell").style.display = "grid"; }
+  function lock() {
+    API.logout();
+    loaded = false;
+    $("shell").style.display = "none";
+    $("gate").style.display = "grid";
+    $("gatePass").value = "";
+  }
+
+  function loadData() {
+    return API.getPortfolio()
+      .then(function (d) {
+        data = d || {};
+        // Defensive defaults so the editors never crash on a fresh DB.
+        data.profile = data.profile || {};
+        data.experience = data.experience || [];
+        data.projects = data.projects || [];
+        data.skills = data.skills || [];
+        data.education = data.education || [];
+        data.certifications = data.certifications || [];
+        loaded = true;
+        renderAll();
+      })
+      .catch(function (err) {
+        console.error("Load failed:", err);
+        toast(err.message || "Could not load data from server", true);
+      });
+  }
+
   function tryLogin() {
     var v = $("gatePass").value;
-    if (v === Store.getPassword()) { unlock(); renderAll(); }
-    else toast("Incorrect password", true);
+    if (!v) { toast("Enter your password", true); return; }
+    var btn = $("gateBtn");
+    btn.disabled = true;
+    API.login(v)
+      .then(function () {
+        unlock();
+        return loadData();
+      })
+      .catch(function (err) {
+        if (err.status === 401) toast("Incorrect password", true);
+        else toast(err.message || "Login failed — is the server running?", true);
+      })
+      .finally(function () { btn.disabled = false; });
   }
   $("gateBtn").addEventListener("click", tryLogin);
   $("gatePass").addEventListener("keydown", function (e) { if (e.key === "Enter") tryLogin(); });
-  $("logoutBtn").addEventListener("click", function () {
-    $("shell").style.display = "none"; $("gate").style.display = "grid"; $("gatePass").value = "";
-  });
+  $("logoutBtn").addEventListener("click", lock);
 
   /* ---------- Tabs ---------- */
   document.querySelectorAll(".nav-tab").forEach(function (tab) {
@@ -84,7 +146,7 @@
     $("f_linkedin").value = p.linkedin || "";
     $("f_github").value = p.github || "";
     $("f_resume").value = p.resumeUrl || "";
-    $("imgPreview").src = p.image || Store.DEFAULT_AVATAR;
+    $("imgPreview").src = p.image || API.DEFAULT_AVATAR;
 
     var stats = p.stats || [];
     var html = "";
@@ -98,6 +160,7 @@
   }
 
   $("saveProfile").addEventListener("click", function () {
+    if (!data) { toast("Still loading — try again in a moment", true); return; }
     var p = data.profile;
     p.name = $("f_name").value.trim();
     p.role = $("f_role").value.trim();
@@ -114,46 +177,44 @@
       var v = $("stat_v" + i).value.trim(), l = $("stat_l" + i).value.trim();
       if (v || l) p.stats.push({ value: v, label: l });
     }
-    persist();
-    toast("Profile saved ✓");
+    var btn = $("saveProfile");
+    btn.disabled = true;
+    persist("Profile saved ✓").finally(function () { btn.disabled = false; });
   });
 
-  /* image upload */
+  /* image upload — straight to Cloudinary, store the returned URL */
   $("imgPick").addEventListener("click", function () { $("imgFile").click(); });
   $("imgFile").addEventListener("change", function (e) {
     var file = e.target.files[0];
     if (!file) return;
-    if (file.size > 2.2 * 1024 * 1024) {
-      toast("Image is large — compressing…");
-    }
-    var reader = new FileReader();
-    reader.onload = function (ev) {
-      // downscale via canvas to keep localStorage happy
-      var img = new Image();
-      img.onload = function () {
-        var max = 900;
-        var w = img.width, h = img.height;
-        if (w > max || h > max) {
-          if (w > h) { h = Math.round(h * max / w); w = max; }
-          else { w = Math.round(w * max / h); h = max; }
-        }
-        var c = document.createElement("canvas");
-        c.width = w; c.height = h;
-        c.getContext("2d").drawImage(img, 0, 0, w, h);
-        var out = c.toDataURL("image/jpeg", 0.85);
-        data.profile.image = out;
-        $("imgPreview").src = out;
-        if (persist()) toast("Photo updated ✓ — don't forget it's saved");
-      };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
+    if (!/^image\//.test(file.type)) { toast("Please choose an image file", true); return; }
+    if (file.size > 8 * 1024 * 1024) { toast("Image too large (max 8 MB)", true); return; }
+
+    toast("Uploading photo…");
+    var pickBtn = $("imgPick");
+    pickBtn.disabled = true;
+
+    API.uploadImage(file)
+      .then(function (url) {
+        data.profile.image = url;
+        $("imgPreview").src = url;
+        // Persist the new URL immediately so it survives refresh.
+        return persist("Photo updated ✓");
+      })
+      .catch(function (err) {
+        console.error("Upload failed:", err);
+        if (err.status === 401) { toast("Session expired — log in again", true); lock(); }
+        else toast(err.message || "Image upload failed", true);
+      })
+      .finally(function () {
+        pickBtn.disabled = false;
+        $("imgFile").value = ""; // allow re-selecting the same file
+      });
   });
   $("imgReset").addEventListener("click", function () {
-    data.profile.image = Store.DEFAULT_AVATAR;
-    $("imgPreview").src = Store.DEFAULT_AVATAR;
-    persist();
-    toast("Photo reset");
+    data.profile.image = API.DEFAULT_AVATAR;
+    $("imgPreview").src = API.DEFAULT_AVATAR;
+    persist("Photo reset");
   });
 
   /* ============================================================
@@ -190,7 +251,7 @@
     renderList("expList", data.experience,
       function (e) { return e.role; },
       function (e) { return e.company + "  ·  " + e.period; },
-      editExp, function (i) { data.experience.splice(i, 1); persist(); renderExp(); toast("Deleted"); },
+      editExp, function (i) { data.experience.splice(i, 1); renderExp(); persist("Deleted"); },
       "No experience yet. Add your first role.");
   }
   function editExp(i) {
@@ -210,7 +271,7 @@
         };
         if (!obj.role) { toast("Role is required", true); return; }
         if (isNew) data.experience.push(obj); else data.experience[i] = obj;
-        persist(); renderExp(); closeModal(); toast("Saved ✓");
+        renderExp(); closeModal(); persist("Saved ✓");
       });
   }
   $("addExp").addEventListener("click", function () { editExp(null); });
@@ -222,7 +283,7 @@
     renderList("projList", data.projects,
       function (p) { return p.title; },
       function (p) { return (p.tags || []).join(", "); },
-      editProj, function (i) { data.projects.splice(i, 1); persist(); renderProj(); toast("Deleted"); },
+      editProj, function (i) { data.projects.splice(i, 1); renderProj(); persist("Deleted"); },
       "No projects yet. Add your first project.");
   }
   function editProj(i) {
@@ -241,7 +302,7 @@
         };
         if (!obj.title) { toast("Title is required", true); return; }
         if (isNew) data.projects.push(obj); else data.projects[i] = obj;
-        persist(); renderProj(); closeModal(); toast("Saved ✓");
+        renderProj(); closeModal(); persist("Saved ✓");
       });
   }
   $("addProj").addEventListener("click", function () { editProj(null); });
@@ -253,7 +314,7 @@
     renderList("skillList", data.skills,
       function (s) { return s.category; },
       function (s) { return (s.items || []).join(", "); },
-      editSkill, function (i) { data.skills.splice(i, 1); persist(); renderSkill(); toast("Deleted"); },
+      editSkill, function (i) { data.skills.splice(i, 1); renderSkill(); persist("Deleted"); },
       "No skill categories yet.");
   }
   function editSkill(i) {
@@ -269,7 +330,7 @@
         };
         if (!obj.category) { toast("Category name required", true); return; }
         if (isNew) data.skills.push(obj); else data.skills[i] = obj;
-        persist(); renderSkill(); closeModal(); toast("Saved ✓");
+        renderSkill(); closeModal(); persist("Saved ✓");
       });
   }
   $("addSkill").addEventListener("click", function () { editSkill(null); });
@@ -281,7 +342,7 @@
     renderList("eduList", data.education,
       function (e) { return e.degree; },
       function (e) { return e.school + "  ·  " + e.period; },
-      editEdu, function (i) { data.education.splice(i, 1); persist(); renderEdu(); toast("Deleted"); },
+      editEdu, function (i) { data.education.splice(i, 1); renderEdu(); persist("Deleted"); },
       "No education entries yet.");
   }
   function editEdu(i) {
@@ -299,7 +360,7 @@
         };
         if (!obj.degree) { toast("Degree is required", true); return; }
         if (isNew) data.education.push(obj); else data.education[i] = obj;
-        persist(); renderEdu(); closeModal(); toast("Saved ✓");
+        renderEdu(); closeModal(); persist("Saved ✓");
       });
   }
   $("addEdu").addEventListener("click", function () { editEdu(null); });
@@ -311,7 +372,7 @@
     renderList("certList", data.certifications,
       function (c) { return c.name; },
       function (c) { return c.issuer; },
-      editCert, function (i) { data.certifications.splice(i, 1); persist(); renderCert(); toast("Deleted"); },
+      editCert, function (i) { data.certifications.splice(i, 1); renderCert(); persist("Deleted"); },
       "No certifications yet.");
   }
   function editCert(i) {
@@ -324,7 +385,7 @@
         var obj = { name: mv("c_name"), issuer: mv("c_issuer") };
         if (!obj.name) { toast("Name is required", true); return; }
         if (isNew) data.certifications.push(obj); else data.certifications[i] = obj;
-        persist(); renderCert(); closeModal(); toast("Saved ✓");
+        renderCert(); closeModal(); persist("Saved ✓");
       });
   }
   $("addCert").addEventListener("click", function () { editCert(null); });
@@ -332,15 +393,16 @@
   /* ============================================================
      SETTINGS
      ============================================================ */
+  // The admin password is now a server-side secret (ADMIN_PASSWORD env var),
+  // so it can't be changed from the browser. Explain that clearly.
   $("savePass").addEventListener("click", function () {
-    var v = $("newPass").value.trim();
-    if (v.length < 4) { toast("Use at least 4 characters", true); return; }
-    Store.setPassword(v); $("newPass").value = "";
-    toast("Password updated ✓");
+    toast("Password is set on the server (ADMIN_PASSWORD env var)", true);
   });
 
+  // Export the current content as a JSON backup.
   $("exportBtn").addEventListener("click", function () {
-    var blob = new Blob([Store.exportJSON()], { type: "application/json" });
+    if (!loaded) { toast("Nothing to export yet", true); return; }
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "portfolio-data.json";
@@ -349,29 +411,39 @@
     toast("Backup downloaded ✓");
   });
 
+  // Import a JSON backup and push it to the database.
   $("importBtn").addEventListener("click", function () { $("importFile").click(); });
   $("importFile").addEventListener("change", function (e) {
     var f = e.target.files[0]; if (!f) return;
     var r = new FileReader();
     r.onload = function (ev) {
       try {
-        data = Store.importJSON(ev.target.result);
+        var obj = JSON.parse(ev.target.result);
+        if (typeof obj !== "object" || obj === null) throw new Error("bad");
+        data = obj;
+        data.profile = data.profile || {};
+        data.experience = data.experience || [];
+        data.projects = data.projects || [];
+        data.skills = data.skills || [];
+        data.education = data.education || [];
+        data.certifications = data.certifications || [];
         renderAll();
-        toast("Data imported ✓");
+        persist("Data imported & saved ✓");
       } catch (err) { toast("Invalid JSON file", true); }
+      finally { $("importFile").value = ""; }
     };
     r.readAsText(f);
   });
 
+  // Reset to the original résumé defaults (server re-seeds an empty DB on next read).
+  // Without a dedicated reset endpoint we re-seed by importing a backup instead.
   $("resetBtn").addEventListener("click", function () {
-    if (!confirm("Reset ALL content to the original résumé data? This cannot be undone.")) return;
-    data = Store.resetData();
-    renderAll();
-    toast("Content reset to defaults");
+    toast("To restore defaults, drop the DB document — or import a backup", true);
   });
 
   /* ---------- Render everything ---------- */
   function renderAll() {
+    if (!data) return;
     loadProfile();
     renderExp();
     renderProj();
@@ -380,7 +452,9 @@
     renderCert();
   }
 
-  /* If already past gate (e.g. dev), nothing happens until login.
-     Pre-render lists so they're ready after unlock. */
-  renderAll();
+  /* If a valid session key is already present (e.g. soft refresh), skip the gate. */
+  if (API.isAuthed()) {
+    unlock();
+    loadData();
+  }
 })();

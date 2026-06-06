@@ -1,3 +1,8 @@
-# The backend is deployed separately on Render — don't ship it to Vercel.
-backend/
+# The backend now runs as a Vercel serverless function (api/index.js -> backend/app.js),
+# so the backend SOURCE must be shipped. Only exclude things the function doesn't need:
+backend/node_modules/
+backend/.env
+backend/test/
+backend/uploads/
+backend/render.yaml
 *.zip
